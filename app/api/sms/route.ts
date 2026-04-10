@@ -31,31 +31,40 @@ export async function POST(req: Request) {
 
     const messageSuffix = statusMessages[status] || 'status has been updated.';
 
-    const results = await Promise.allSettled(
-      students.map((student: any) => {
-        let phone = student.parentPhone.trim();
-        // Basic formatting attempt if user forgot '+'
-        if (!phone.startsWith('+')) {
-          if (phone.length === 10) {
-            // Assume India country code for 10-digit numbers
-            phone = '+91' + phone;
-          } else if (phone.length > 10) {
-            // If they included country code without '+', e.g., "919876543210" -> "+919876543210"
-            phone = '+' + phone;
-          }
+    const results = [];
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      let phone = student.parentPhone.trim();
+      
+      // Basic formatting attempt if user forgot '+'
+      if (!phone.startsWith('+')) {
+        if (phone.length === 10) {
+          phone = '+91' + phone;
+        } else if (phone.length > 10) {
+          phone = '+' + phone;
         }
+      }
 
-        const body = customMessage 
-          ? `School Transport Alert for ${student.name}: ${customMessage}`
-          : `School Transport Update: ${student.name} ${messageSuffix}`;
+      const body = customMessage 
+        ? `School Transport Alert for ${student.name}: ${customMessage}`
+        : `School Transport Update: ${student.name} ${messageSuffix}`;
 
-        return client.messages.create({
+      try {
+        const result = await client.messages.create({
           body,
           from: twilioPhone,
           to: phone
         });
-      })
-    );
+        results.push({ status: 'fulfilled', value: result });
+      } catch (error) {
+        results.push({ status: 'rejected', reason: error });
+      }
+
+      // Add a 500ms delay between messages to prevent Twilio rate limits (especially for siblings with same number)
+      if (i < students.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
 
     const failures = results.filter(r => r.status === 'rejected');
     if (failures.length > 0) {

@@ -303,22 +303,22 @@ export default function DriverDashboard() {
               <AlertTriangle className="w-5 h-5 mr-2" strokeWidth={2.5} />
               Emergency Alert
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] border-red-100 bg-red-50/95 backdrop-blur-2xl rounded-3xl p-6">
+            <DialogContent className="w-[92vw] sm:w-full sm:max-w-[425px] border-red-100 bg-red-50/95 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 overflow-hidden">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-red-700 flex items-center">
-                  <AlertTriangle className="w-7 h-7 mr-3" strokeWidth={2.5} />
+                  <AlertTriangle className="w-7 h-7 mr-3 shrink-0" strokeWidth={2.5} />
                   Trigger Emergency
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="bg-red-100/60 p-5 rounded-2xl border border-red-200 text-red-800 text-sm font-medium">
+              <div className="space-y-4 py-4 w-full">
+                <div className="bg-red-100/60 p-4 sm:p-5 rounded-2xl border border-red-200 text-red-800 text-sm font-medium">
                   <strong className="text-red-900 font-bold block mb-1">Warning:</strong> This will immediately send an SMS alert to the parents of <strong className="text-red-900">{students.length} students</strong> on your route. Use this only in genuine emergencies.
                 </div>
-                <div className="space-y-4">
-                  <div className="space-y-3">
+                <div className="space-y-4 w-full min-w-0">
+                  <div className="space-y-3 w-full min-w-0">
                     <label className="text-sm font-bold text-red-900 drop-shadow-sm">Quick Select Preset</label>
                     <Select onValueChange={(val: string | null) => setEmergencyMessage(val || '')}>
-                      <SelectTrigger className="w-full border-red-200 bg-white/80 backdrop-blur-sm rounded-2xl h-12 text-slate-700 font-semibold focus:ring-red-500/50">
+                      <SelectTrigger className="w-full border-red-200 bg-white/80 backdrop-blur-sm rounded-2xl h-12 text-slate-700 font-semibold focus:ring-red-500/50 break-all overflow-hidden [&>span]:line-clamp-1 [&>span]:truncate">
                         <SelectValue placeholder="Select a common issue..." />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
