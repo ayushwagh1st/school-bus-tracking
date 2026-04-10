@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebase';
-import { Users, Bus, Activity, ArrowUpRight } from 'lucide-react';
+import { Users, Bus, Activity, ArrowUpRight, Clock, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/components/auth-provider';
 
@@ -14,6 +14,7 @@ export default function AdminDashboard() {
     totalDrivers: 0,
     todayLogs: 0,
   });
+  const [recentLogs, setRecentLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +26,28 @@ export default function AdminDashboard() {
         
         const today = format(new Date(), 'yyyy-MM-dd');
         const logsSnap = await getDocs(query(collection(db, 'tracking_logs'), where('date', '==', today)));
+
+        const studentMap: Record<string, string> = {};
+        studentsSnap.forEach(d => { studentMap[d.id] = d.data().name; });
+        
+        const driverMap: Record<string, string> = {};
+        driversSnap.forEach(d => { driverMap[d.id] = d.data().name; });
+
+        const logsList = logsSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          studentName: studentMap[doc.data().studentId] || 'Unknown Student',
+          driverName: driverMap[doc.data().driverId] || 'Unknown Driver',
+        }));
+        
+        // Sort newest first
+        logsList.sort((a: any, b: any) => {
+          const tA = a.timestamp?.toMillis?.() || 0;
+          const tB = b.timestamp?.toMillis?.() || 0;
+          return tB - tA;
+        });
+
+        setRecentLogs(logsList.slice(0, 15)); // top 15
 
         setStats({
           totalStudents: studentsSnap.size,
@@ -99,6 +122,69 @@ export default function AdminDashboard() {
               <ArrowUpRight className="w-3.5 h-3.5 mr-1" strokeWidth={2.5} /> Active
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Recent Activity Feed */}
+      <div className="mt-8 bg-white/70 backdrop-blur-2xl border border-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-slate-100/60 bg-white/50 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
+              <Clock className="w-6 h-6 mr-3 text-indigo-500" strokeWidth={2.5} />
+              Recent Tracking Activity
+            </h2>
+            <p className="text-slate-500 font-medium text-sm mt-1">Live feed of all today's bus updates.</p>
+          </div>
+        </div>
+        
+        <div className="p-4 sm:p-8">
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+               <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+          ) : recentLogs.length === 0 ? (
+            <div className="text-center py-12 bg-slate-50/50 rounded-3xl border border-slate-100 border-dashed">
+              <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" strokeWidth={1.5} />
+              <p className="text-lg font-bold text-slate-600">No activity yet today</p>
+              <p className="text-slate-400 font-medium text-sm mt-1">Logs will appear here once tracking begins.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recentLogs.map((log) => (
+                <div key={log.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-indigo-50 p-3 rounded-2xl text-indigo-600 shrink-0 border border-indigo-100/50">
+                      <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
+                    </div>
+                    <div>
+                      <h4 className="font-black tracking-tight text-slate-900 text-lg flex flex-wrap items-center gap-2">
+                        {log.studentName}
+                        <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100/50">
+                          {log.status?.replace(/_/g, ' ')}
+                        </span>
+                      </h4>
+                      <p className="text-sm text-slate-500 font-semibold mt-1 flex flex-wrap items-center gap-2">
+                        <span className="flex items-center">
+                          <Bus className="w-4 h-4 mr-1.5 text-slate-400" /> {log.driverName}
+                        </span>
+                        {log.message && (
+                          <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 flex items-center">
+                            Note: {log.message}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right sm:min-w-[120px]">
+                    <div className="text-slate-700 font-bold bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 inline-flex items-center shadow-inner">
+                      <Clock className="w-4 h-4 mr-2 text-indigo-400" strokeWidth={2.5} />
+                      {new Date(log.timestamp?.toMillis?.() || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

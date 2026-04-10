@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { Search, Phone, MapPin, User, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
+import { Search, Phone, MapPin, User, CheckCircle2, Loader2, AlertTriangle, RefreshCw, Radio } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 
 interface Student {
@@ -39,6 +39,7 @@ export default function DriverDashboard() {
   // GPS Tracking State
   const [isTracking, setIsTracking] = useState(false);
   const [watchId, setWatchId] = useState<number | null>(null);
+  const [isSyncingGps, setIsSyncingGps] = useState(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -111,6 +112,40 @@ export default function DriverDashboard() {
       }
     };
   }, [watchId]);
+
+  const forceGpsSync = () => {
+    if (!navigator.geolocation || !user) {
+      toast.error('Geolocation is not available.');
+      return;
+    }
+    setIsSyncingGps(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const locationRef = doc(db, 'bus_locations', user.uid);
+          await setDoc(locationRef, {
+            driverId: user.uid,
+            driverName: user.displayName || 'Driver',
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            timestamp: new Date()
+          });
+          toast.success('GPS location manually synced!');
+        } catch (error) {
+          console.error('Error updating location:', error);
+          handleFirestoreError(error, OperationType.WRITE, 'bus_locations');
+        } finally {
+          setIsSyncingGps(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        toast.error('Failed to forcibly sync location.');
+        setIsSyncingGps(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const toggleSelectAll = () => {
     if (selectedStudents.size === filteredStudents.length) {
@@ -221,17 +256,43 @@ export default function DriverDashboard() {
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">My Route</h1>
             <p className="text-slate-500 text-sm font-medium mb-6">Manage your assigned students and update their status in real-time.</p>
             
-            <Button 
-              onClick={toggleTracking}
-              className={`rounded-2xl h-12 px-6 font-bold shadow-[0_4px_14px_0_rgba(15,23,42,0.1)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 ${
-                isTracking 
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30' 
-                  : 'bg-white text-indigo-900 hover:bg-indigo-50 border border-indigo-100'
-              }`}
-            >
-              <MapPin className={`w-5 h-5 mr-2 ${isTracking ? 'animate-pulse' : ''}`} strokeWidth={2.5} />
-              {isTracking ? 'GPS Tracking Active' : 'Start GPS Tracking'}
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-2 sm:mb-0">
+              <Button 
+                onClick={toggleTracking}
+                className={`rounded-2xl h-12 w-full sm:w-auto px-6 font-bold shadow-[0_4px_14px_0_rgba(15,23,42,0.1)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 border ${
+                  isTracking 
+                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' 
+                    : 'bg-white text-indigo-900 hover:bg-indigo-50 border-indigo-100'
+                }`}
+              >
+                {isTracking ? (
+                  <>
+                    <span className="relative flex h-3 w-3 mr-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    Tracking Active
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-5 h-5 mr-2" strokeWidth={2.5} />
+                    Start GPS Tracking
+                  </>
+                )}
+              </Button>
+
+              {isTracking && (
+                <Button 
+                  onClick={forceGpsSync}
+                  disabled={isSyncingGps}
+                  className="rounded-2xl h-12 w-full sm:w-auto px-5 font-bold transition-all duration-300 bg-white text-indigo-600 border border-indigo-100 hover:bg-indigo-50 shadow-sm"
+                  variant="outline"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingGps ? 'animate-spin' : ''}`} strokeWidth={2.5} />
+                  {isSyncingGps ? 'Syncing...' : 'Force Sync'}
+                </Button>
+              )}
+            </div>
           </div>
           
           {/* Emergency Alert Button */}
