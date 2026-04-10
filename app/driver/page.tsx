@@ -317,7 +317,7 @@ export default function DriverDashboard() {
                 <div className="space-y-4">
                   <div className="space-y-3">
                     <label className="text-sm font-bold text-red-900 drop-shadow-sm">Quick Select Preset</label>
-                    <Select onValueChange={(val) => setEmergencyMessage(val)}>
+                    <Select onValueChange={(val: string) => setEmergencyMessage(val)}>
                       <SelectTrigger className="w-full border-red-200 bg-white/80 backdrop-blur-sm rounded-2xl h-12 text-slate-700 font-semibold focus:ring-red-500/50">
                         <SelectValue placeholder="Select a common issue..." />
                       </SelectTrigger>
