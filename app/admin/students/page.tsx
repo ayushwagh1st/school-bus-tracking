@@ -373,7 +373,7 @@ export default function StudentsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label>Assign Driver</Label>
-                    <Select value={formData.driverId} onValueChange={(val) => {
+                    <Select value={formData.driverId} onValueChange={(val: string | null) => {
                       if (val) {
                         setFormData({...formData, driverId: val});
                       }

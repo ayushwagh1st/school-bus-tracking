@@ -504,7 +504,7 @@ export default function DriversPage() {
                   </div>
                   <div className="space-y-2">
                     <Label>Status</Label>
-                    <Select value={formData.status || 'available'} onValueChange={(val) => {
+                    <Select value={formData.status || 'available'} onValueChange={(val: string | null) => {
                       if (val === 'available' || val === 'unavailable') {
                         setFormData({...formData, status: val});
                       }
@@ -612,7 +612,7 @@ export default function DriversPage() {
             </div>
             <div className="space-y-2">
               <Label>Reason</Label>
-              <Select value={emergencyReason} onValueChange={(val) => setEmergencyReason(val || '')}>
+              <Select value={emergencyReason} onValueChange={(val: string | null) => setEmergencyReason(val || '')}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a reason..." />
                 </SelectTrigger>
@@ -666,7 +666,7 @@ export default function DriversPage() {
             </div>
             <div className="space-y-2">
               <Label>Select New Driver</Label>
-              <Select value={driverToReassignTo} onValueChange={(val) => setDriverToReassignTo(val || '')}>
+              <Select value={driverToReassignTo} onValueChange={(val: string | null) => setDriverToReassignTo(val || '')}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a driver..." />
                 </SelectTrigger>
