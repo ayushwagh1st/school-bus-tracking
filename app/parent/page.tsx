@@ -175,17 +175,21 @@ export default function ParentPortal() {
               const location = busLocations[student.driverId];
 
               return (
-                <div key={student.id} className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                  <div className="bg-white/80 backdrop-blur-2xl p-6 rounded-[2rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-white">
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">{student.name}</h2>
-                    <div className="flex items-center text-slate-500 mt-2 font-medium">
-                      <MapPin className="w-4 h-4 mr-2 text-indigo-400" strokeWidth={2.5} />
-                      <p>{student.address}</p>
+                <div key={student.id} className="bg-white/60 backdrop-blur-2xl p-4 sm:p-6 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/80 space-y-5 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                  
+                  {/* Student Info Header */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-2 gap-4">
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-900 tracking-tight">{student.name}</h2>
+                      <div className="flex items-center text-slate-500 mt-1 font-medium">
+                        <MapPin className="w-4 h-4 mr-1.5 text-indigo-400" strokeWidth={2.5} />
+                        <p>{student.address}</p>
+                      </div>
                     </div>
                   </div>
 
                   {status && (
-                    <div className="bg-indigo-600 p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(99,102,241,0.2)] text-white relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-indigo-500 transition-all hover:scale-[1.01]">
+                    <div className="bg-indigo-600 p-5 sm:p-6 rounded-[2rem] shadow-[0_8px_20px_rgb(99,102,241,0.2)] text-white relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-indigo-500">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                       <div className="relative z-10 w-full">
                         <div className="flex items-center justify-between mb-1">
@@ -210,18 +214,18 @@ export default function ParentPortal() {
                     </div>
                   )}
 
-                  <div className="bg-white/90 backdrop-blur-2xl p-5 md:p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 px-2 gap-4">
+                  <div className="bg-white/95 backdrop-blur-sm p-4 sm:p-6 rounded-[2rem] shadow-[0_4px_15px_rgb(0,0,0,0.03)] border border-slate-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
                       <h3 className="font-extrabold text-xl text-slate-900 flex items-center tracking-tight">
                         <div className="p-2 bg-indigo-50 rounded-xl mr-3 shadow-inner">
-                          <MapPin className="w-5 h-5 text-indigo-600" strokeWidth={2.5} />
+                          <Bus className="w-5 h-5 text-indigo-600" strokeWidth={2.5} />
                         </div>
                         Live Bus Location
                       </h3>
                       
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         {location ? (
-                          <span className="flex items-center text-sm font-bold tracking-wide text-emerald-700 bg-emerald-100/80 backdrop-blur-sm px-4 py-2 rounded-xl ring-1 ring-emerald-200 border border-emerald-50 shadow-sm flex-1 sm:flex-none justify-center">
+                          <span className="flex items-center text-sm font-bold tracking-wide text-emerald-700 bg-emerald-100/80 backdrop-blur-sm px-4 py-2 rounded-xl ring-1 ring-emerald-200 shadow-sm flex-1 sm:flex-none justify-center">
                             <span className="relative flex h-2.5 w-2.5 mr-2.5">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -245,27 +249,30 @@ export default function ParentPortal() {
                     </div>
                     
                     {location ? (
-                      <div className="h-[450px] w-full rounded-[1.5rem] overflow-hidden shadow-inner ring-1 ring-slate-200/60 relative group">
-                        <LiveMap 
-                          locations={[{
-                            id: location.driverId,
-                            lat: location.lat,
-                            lng: location.lng,
-                            label: location.driverName || 'Bus'
-                          }]} 
-                          zoom={15}
-                        />
-                        <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-xl p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 flex items-center justify-between pointer-events-none transition-transform duration-300">
+                      <div className="space-y-3">
+                        <div className="h-[400px] w-full rounded-2xl overflow-hidden shadow-inner ring-1 ring-slate-200/60 relative group z-10">
+                          <LiveMap 
+                            locations={[{
+                              id: location.driverId,
+                              lat: location.lat,
+                              lng: location.lng,
+                              label: location.driverName || 'Bus'
+                            }]} 
+                            zoom={15}
+                          />
+                        </div>
+                        {/* Status bar safely OUTSIDE the map so Leaflet controls don't overlap it */}
+                        <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
                           <TimeElapsed busLocation={location} />
                         </div>
                       </div>
                     ) : (
-                      <div className="h-[400px] w-full bg-slate-50/50 backdrop-blur-sm rounded-[1.5rem] border-2 border-slate-200/50 border-dashed flex flex-col items-center justify-center text-slate-400 text-center p-6">
-                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white mb-6 shadow-sm border border-slate-100">
-                          <Bus className="w-10 h-10 text-slate-300" strokeWidth={2} />
+                      <div className="h-[350px] w-full bg-slate-50/50 backdrop-blur-sm rounded-2xl border-2 border-slate-200/50 border-dashed flex flex-col items-center justify-center text-slate-400 p-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm border border-slate-100">
+                          <Bus className="w-8 h-8 text-slate-300" strokeWidth={2} />
                         </div>
                         <p className="text-xl font-bold text-slate-600 tracking-tight">Location Unavailable</p>
-                        <p className="text-sm mt-2 font-medium">The driver hasn&apos;t started tracking yet.</p>
+                        <p className="text-sm mt-2 font-medium text-center">The driver hasn&apos;t started tracking yet.</p>
                       </div>
                     )}
                   </div>

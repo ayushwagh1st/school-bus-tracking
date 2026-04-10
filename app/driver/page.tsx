@@ -341,13 +341,13 @@ export default function DriverDashboard() {
                   </div>
                 </div>
               </div>
-              <DialogFooter className="gap-3 sm:gap-0">
-                <Button variant="outline" onClick={() => setIsEmergencyOpen(false)} disabled={sendingEmergency} className="border-red-200 text-red-700 hover:bg-red-100 rounded-xl font-bold h-11">
+              <DialogFooter className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-2 sm:space-x-2">
+                <Button variant="outline" onClick={() => setIsEmergencyOpen(false)} disabled={sendingEmergency} className="border-red-200 text-red-700 hover:bg-red-100 rounded-xl font-bold h-12 w-full sm:w-auto">
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={handleEmergencyAlert} disabled={sendingEmergency} className="bg-red-600 hover:bg-red-700 rounded-xl font-bold h-11 shadow-md">
-                  {sendingEmergency ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <AlertTriangle className="w-5 h-5 mr-2" strokeWidth={2.5} />}
-                  {sendingEmergency ? 'Sending Alert...' : 'Send Alert to All Parents'}
+                <Button variant="destructive" onClick={handleEmergencyAlert} disabled={sendingEmergency} className="bg-red-600 hover:bg-red-700 !text-white rounded-xl font-bold h-12 shadow-md w-full sm:w-auto">
+                  {sendingEmergency ? <Loader2 className="w-5 h-5 mr-2 animate-spin text-white" /> : <AlertTriangle className="w-5 h-5 mr-2 text-white" strokeWidth={2.5} />}
+                  <span className="text-white">{sendingEmergency ? 'Sending Alert...' : 'Send Alert to All Parents'}</span>
                 </Button>
               </DialogFooter>
             </DialogContent>
