@@ -1,0 +1,5 @@
+{
+  "name": "School Student Tracking System",
+  "description": "A system to track student transport and notify parents via SMS.",
+  "requestFramePermissions": ["geolocation"]
+}

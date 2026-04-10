@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile for admins and drivers",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "driver"] },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "route": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "unavailable"] }
+      },
+      "required": ["uid", "email", "role", "name"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Student details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "parentPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "driverId": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "parentPhone", "address", "driverId", "createdAt"]
+    },
+    "TrackingLog": {
+      "title": "TrackingLog",
+      "description": "Log of student transport status",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "driverId": { "type": "string" },
+        "driverName": { "type": "string" },
+        "status": { "type": "string", "enum": ["picked_up", "reached_school", "left_school", "reached_home", "emergency"] },
+        "timestamp": { "type": "timestamp" },
+        "date": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "required": ["studentId", "driverId", "status", "timestamp", "date"]
+    },
+    "BusLocation": {
+      "title": "BusLocation",
+      "description": "Real-time location of a bus/driver",
+      "type": "object",
+      "properties": {
+        "driverId": { "type": "string" },
+        "driverName": { "type": "string" },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "timestamp": { "type": "timestamp" }
+      },
+      "required": ["driverId", "lat", "lng", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles"
+    },
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/Student" },
+      "description": "Students"
+    },
+    "/tracking_logs/{logId}": {
+      "schema": { "$ref": "#/entities/TrackingLog" },
+      "description": "Tracking logs"
+    },
+    "/bus_locations/{driverId}": {
+      "schema": { "$ref": "#/entities/BusLocation" },
+      "description": "Real-time bus locations"
+    }
+  }
+}
