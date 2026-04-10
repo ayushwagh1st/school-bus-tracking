@@ -317,7 +317,7 @@ export default function DriverDashboard() {
                 <div className="space-y-4">
                   <div className="space-y-3">
                     <label className="text-sm font-bold text-red-900 drop-shadow-sm">Quick Select Preset</label>
-                    <Select onValueChange={(val: string) => setEmergencyMessage(val)}>
+                    <Select onValueChange={(val: string | null) => setEmergencyMessage(val || '')}>
                       <SelectTrigger className="w-full border-red-200 bg-white/80 backdrop-blur-sm rounded-2xl h-12 text-slate-700 font-semibold focus:ring-red-500/50">
                         <SelectValue placeholder="Select a common issue..." />
                       </SelectTrigger>
@@ -379,7 +379,7 @@ export default function DriverDashboard() {
           </span>
         </div>
         <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-          <Select value={bulkStatus} onValueChange={(val) => {
+          <Select value={bulkStatus} onValueChange={(val: string | null) => {
             if (val) setBulkStatus(val);
           }}>
             <SelectTrigger className="w-full sm:w-[220px] border-slate-200 bg-white/80 backdrop-blur-sm rounded-xl h-12 text-base font-semibold">
