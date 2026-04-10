@@ -3,55 +3,30 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: users
-    // Document ID: user uid
-    // Fields:
-    //   - uid: string (required)
-    //   - email: string (required)
-    //   - role: string (required, 'admin' or 'driver')
-    //   - name: string (required)
-    //   - phone: string (optional)
-    //   - route: string (optional)
-    //   - status: string (optional, 'available' or 'unavailable')
-    //
-    // Collection: students
-    // Document ID: auto-generated
-    // Fields:
-    //   - name: string (required)
-    //   - parentPhone: string (required)
-    //   - address: string (required)
-    //   - driverId: string (required)
-    //   - createdAt: timestamp (required)
-    //
-    // Collection: tracking_logs
-    // Document ID: auto-generated
-    // Fields:
-    //   - studentId: string (required)
-    //   - driverId: string (required)
-    //   - driverName: string (optional)
-    //   - status: string (required, 'picked_up', 'reached_school', 'left_school', 'reached_home')
-    //   - timestamp: timestamp (required)
-    //   - date: string (required)
-    //
-    // ===============================================================
-
-    // Helper Functions
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "ayushwagh1st@gmail.com" && request.auth.token.email_verified == true));
+        (
+          (
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          ) ||
+          (
+            request.auth.token.email_verified == true &&
+            request.auth.token.email in [
+              "ayushwagh1st@gmail.com",
+              "abhijeetkurle.ak@gmail.com"
+            ]
+          )
+        );
     }
 
     function isDriver() {
       return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'driver';
     }
 
@@ -64,64 +39,71 @@ service cloud.firestore {
     }
 
     function isValidEmail(email) {
-      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    // Domain Validators
     function isValidUser() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['uid', 'email', 'role', 'name', 'phone', 'route', 'status']) &&
-             data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
-             data.email is string && isValidEmail(data.email) &&
-             data.role in ['admin', 'driver'] &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             (!('phone' in data) || (data.phone is string && data.phone.size() < 20)) &&
-             (!('route' in data) || (data.route is string && data.route.size() < 100)) &&
-             (!('status' in data) || data.status in ['available', 'unavailable']);
+      return hasOnlyAllowedFields(['uid','email','role','name','phone','route','status']) &&
+        data.uid is string &&
+        data.email is string && isValidEmail(data.email) &&
+        data.role in ['admin','driver'] &&
+        data.name is string;
     }
 
     function isValidStudent() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['name', 'parentPhone', 'address', 'driverId', 'createdAt']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.parentPhone is string && data.parentPhone.size() > 0 && data.parentPhone.size() < 20 &&
-             data.address is string && data.address.size() > 0 && data.address.size() < 200 &&
-             data.driverId is string && data.driverId.size() > 0 && data.driverId.size() < 100 &&
-             data.createdAt is timestamp;
+      return hasOnlyAllowedFields(['name','parentPhone','address','driverId','createdAt']) &&
+        data.name is string &&
+        data.parentPhone is string &&
+        data.address is string &&
+        data.driverId is string &&
+        data.createdAt is timestamp;
     }
 
     function isValidTrackingLog() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['studentId', 'driverId', 'driverName', 'status', 'timestamp', 'date', 'message']) &&
-             data.studentId is string && data.studentId.size() > 0 && data.studentId.size() < 100 &&
-             data.driverId is string && data.driverId.size() > 0 && data.driverId.size() < 100 &&
-             (!('driverName' in data) || (data.driverName is string && data.driverName.size() < 100)) &&
-             data.status in ['picked_up', 'reached_school', 'left_school', 'reached_home', 'emergency'] &&
-             data.timestamp is timestamp &&
-             data.date is string && data.date.size() == 10 &&
-             (!('message' in data) || (data.message is string && data.message.size() < 1000));
+      return hasOnlyAllowedFields(['studentId','driverId','driverName','status','timestamp','date','message']) &&
+        data.studentId is string &&
+        data.driverId is string &&
+        data.status in ['picked_up','reached_school','left_school','reached_home','emergency'] &&
+        data.timestamp is timestamp &&
+        data.date is string;
     }
 
     function isValidBusLocation() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['driverId', 'driverName', 'lat', 'lng', 'timestamp']) &&
-             data.driverId is string && data.driverId.size() > 0 && data.driverId.size() < 100 &&
-             (!('driverName' in data) || (data.driverName is string && data.driverName.size() < 100)) &&
-             data.lat is number &&
-             data.lng is number &&
-             data.timestamp is timestamp;
+      return hasOnlyAllowedFields(['driverId','driverName','lat','lng','timestamp']) &&
+        data.driverId is string &&
+        data.lat is number &&
+        data.lng is number &&
+        data.timestamp is timestamp;
     }
 
-    // Rules
     match /users/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin() || isDriver());
-      allow create: if isAuthenticated() && isValidUser() && (isAdmin() || (isOwner(userId) && request.resource.data.role == 'admin' && request.auth.token.email == "ayushwagh1st@gmail.com"));
-      allow update: if isAuthenticated() && isValidUser() && isAdmin();
+
+      allow create: if isAuthenticated() && isValidUser() &&
+        (
+          isAdmin() ||
+          (
+            isOwner(userId) &&
+            request.resource.data.role == 'admin' &&
+            request.auth.token.email_verified == true &&
+            request.auth.token.email in [
+              "ayushwagh1st@gmail.com",
+              "abhijeetkurle.ak@gmail.com"
+            ]
+          )
+        );
+
+      allow update: if isAdmin() && isValidUser();
       allow delete: if isAdmin();
     }
 
     match /students/{studentId} {
-      allow read: if true;
+      allow read: if isAuthenticated() && (isAdmin() || isDriver());
       allow create: if isAdmin() && isValidStudent();
       allow update: if isAdmin() && isValidStudent();
       allow delete: if isAdmin();
@@ -129,15 +111,29 @@ service cloud.firestore {
 
     match /tracking_logs/{logId} {
       allow read: if isAuthenticated() && (isAdmin() || isDriver());
-      allow create: if (isAdmin() || (isDriver() && request.resource.data.driverId == request.auth.uid)) && isValidTrackingLog();
-      allow update: if isAdmin() && isValidTrackingLog();
+
+      allow create: if (
+        isAdmin() ||
+        (isDriver() && request.resource.data.driverId == request.auth.uid)
+      ) && isValidTrackingLog();
+
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     match /bus_locations/{driverId} {
-      allow read: if true;
-      allow create: if (isAdmin() || (isDriver() && request.resource.data.driverId == request.auth.uid)) && isValidBusLocation();
-      allow update: if (isAdmin() || (isDriver() && request.resource.data.driverId == request.auth.uid)) && isValidBusLocation();
+      allow read: if isAuthenticated();
+
+      allow create: if (
+        isAdmin() ||
+        (isDriver() && request.resource.data.driverId == request.auth.uid)
+      ) && isValidBusLocation();
+
+      allow update: if (
+        isAdmin() ||
+        (isDriver() && request.resource.data.driverId == request.auth.uid)
+      ) && isValidBusLocation();
+
       allow delete: if isAdmin() || (isDriver() && request.auth.uid == driverId);
     }
   }

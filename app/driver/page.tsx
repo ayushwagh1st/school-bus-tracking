@@ -214,61 +214,61 @@ export default function DriverDashboard() {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto pb-20">
-      <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 -mx-4 -mt-4 p-6 sm:mx-0 sm:mt-0 sm:rounded-2xl shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start gap-4">
+      <div className="bg-white/80 backdrop-blur-2xl border border-white p-6 sm:p-8 sm:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden -mx-4 -mt-4 sm:mx-0 sm:mt-0">
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start gap-6">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">My Route</h1>
-            <p className="text-indigo-200 text-sm mb-4">Manage your assigned students and update their status in real-time.</p>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">My Route</h1>
+            <p className="text-slate-500 text-sm font-medium mb-6">Manage your assigned students and update their status in real-time.</p>
             
             <Button 
               onClick={toggleTracking}
-              className={`rounded-xl h-10 px-4 font-semibold shadow-md transition-all ${
+              className={`rounded-2xl h-12 px-6 font-bold shadow-[0_4px_14px_0_rgba(15,23,42,0.1)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 ${
                 isTracking 
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' 
-                  : 'bg-white text-indigo-900 hover:bg-indigo-50'
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30' 
+                  : 'bg-white text-indigo-900 hover:bg-indigo-50 border border-indigo-100'
               }`}
             >
-              <MapPin className={`w-4 h-4 mr-2 ${isTracking ? 'animate-pulse' : ''}`} />
+              <MapPin className={`w-5 h-5 mr-2 ${isTracking ? 'animate-pulse' : ''}`} strokeWidth={2.5} />
               {isTracking ? 'GPS Tracking Active' : 'Start GPS Tracking'}
             </Button>
           </div>
           
           {/* Emergency Alert Button */}
           <Dialog open={isEmergencyOpen} onOpenChange={setIsEmergencyOpen}>
-            <DialogTrigger asChild>
-              <Button variant="destructive" className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border-0 font-bold rounded-xl h-11 px-4">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                Emergency Alert
-              </Button>
+            <DialogTrigger render={
+              <Button variant="destructive" className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] border-0 font-black rounded-2xl h-12 px-6 transition-all duration-300 hover:-translate-y-0.5" />
+            }>
+              <AlertTriangle className="w-5 h-5 mr-2" strokeWidth={2.5} />
+              Emergency Alert
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] border-red-200 bg-red-50/95 backdrop-blur-xl">
+            <DialogContent className="sm:max-w-[425px] border-red-100 bg-red-50/95 backdrop-blur-2xl rounded-3xl p-6">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-red-700 flex items-center">
-                  <AlertTriangle className="w-6 h-6 mr-2" />
-                  Trigger Emergency Alert
+                <DialogTitle className="text-2xl font-black text-red-700 flex items-center">
+                  <AlertTriangle className="w-7 h-7 mr-3" strokeWidth={2.5} />
+                  Trigger Emergency
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="bg-red-100/50 p-4 rounded-xl border border-red-200 text-red-800 text-sm">
-                  <strong>Warning:</strong> This will immediately send an SMS alert to the parents of <strong>ALL {students.length} students</strong> on your route. Use this only in genuine emergencies (e.g., breakdown, accident, severe weather).
+                <div className="bg-red-100/60 p-5 rounded-2xl border border-red-200 text-red-800 text-sm font-medium">
+                  <strong className="text-red-900 font-bold block mb-1">Warning:</strong> This will immediately send an SMS alert to the parents of <strong className="text-red-900">{students.length} students</strong> on your route. Use this only in genuine emergencies.
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-red-900">Additional Details (Optional)</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-red-900">Additional Details (Optional)</label>
                   <Textarea 
                     placeholder="E.g., Bus broken down on Main St. Replacement bus is on the way. All children are safe."
                     value={emergencyMessage}
                     onChange={(e) => setEmergencyMessage(e.target.value)}
-                    className="border-red-200 focus-visible:ring-red-500 bg-white min-h-[100px]"
+                    className="border-red-200 focus-visible:ring-red-500 bg-white/80 backdrop-blur-sm min-h-[120px] rounded-2xl p-4 font-medium"
                   />
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsEmergencyOpen(false)} disabled={sendingEmergency} className="border-red-200 text-red-700 hover:bg-red-100">
+              <DialogFooter className="gap-3 sm:gap-0">
+                <Button variant="outline" onClick={() => setIsEmergencyOpen(false)} disabled={sendingEmergency} className="border-red-200 text-red-700 hover:bg-red-100 rounded-xl font-bold h-11">
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={handleEmergencyAlert} disabled={sendingEmergency} className="bg-red-600 hover:bg-red-700">
-                  {sendingEmergency ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <AlertTriangle className="w-4 h-4 mr-2" />}
+                <Button variant="destructive" onClick={handleEmergencyAlert} disabled={sendingEmergency} className="bg-red-600 hover:bg-red-700 rounded-xl font-bold h-11 shadow-md">
+                  {sendingEmergency ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <AlertTriangle className="w-5 h-5 mr-2" strokeWidth={2.5} />}
                   {sendingEmergency ? 'Sending Alert...' : 'Send Alert to All Parents'}
                 </Button>
               </DialogFooter>
@@ -277,104 +277,113 @@ export default function DriverDashboard() {
         </div>
       </div>
 
-      <div className="flex items-center bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-200/50 shadow-sm w-full sticky top-4 z-20">
-        <Search className="w-5 h-5 text-indigo-400 mr-3" />
+      <div className="flex items-center bg-white/70 backdrop-blur-xl px-5 py-2 rounded-2xl border border-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] w-full sticky top-4 z-20 transition-all focus-within:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] focus-within:bg-white">
+        <Search className="w-6 h-6 text-indigo-400 mr-3" strokeWidth={2} />
         <Input 
           placeholder="Search students by name, phone or address..." 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border-0 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-base bg-transparent placeholder:text-slate-400"
+          className="border-0 h-12 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-lg bg-transparent placeholder:text-slate-400 font-medium font-sans"
         />
       </div>
 
-      <div className="bg-white/60 backdrop-blur-xl p-4 rounded-2xl border border-slate-200/50 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3 w-full sm:w-auto">
-          <Checkbox 
-            checked={filteredStudents.length > 0 && selectedStudents.size === filteredStudents.length}
-            onCheckedChange={toggleSelectAll}
-            className="border-indigo-300 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600 w-5 h-5 rounded-md"
-          />
-          <span className="text-sm font-semibold text-slate-700 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full border border-indigo-100">
-            {selectedStudents.size} selected
+      <div className="bg-white/50 backdrop-blur-xl p-5 rounded-[2rem] border border-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="flex items-center space-x-4 w-full sm:w-auto">
+          <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100">
+            <Checkbox 
+              checked={filteredStudents.length > 0 && selectedStudents.size === filteredStudents.length}
+              onCheckedChange={toggleSelectAll}
+              className="border-indigo-300 data-[state=checked]:bg-indigo-600 w-6 h-6 rounded-lg transition-all"
+            />
+          </div>
+          <span className="text-sm font-bold tracking-wide text-indigo-700 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100/50">
+            {selectedStudents.size} SELECTED
           </span>
         </div>
-        <div className="flex items-center space-x-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
           <Select value={bulkStatus} onValueChange={(val) => {
             if (val) setBulkStatus(val);
           }}>
-            <SelectTrigger className="w-full sm:w-[200px] border-slate-200 bg-white/50 backdrop-blur-sm rounded-xl h-11">
+            <SelectTrigger className="w-full sm:w-[220px] border-slate-200 bg-white/80 backdrop-blur-sm rounded-xl h-12 text-base font-semibold">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
+            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
               {statusOptions.map(opt => (
-                <SelectItem key={opt.value} value={opt.value} className="rounded-lg">{opt.label}</SelectItem>
+                <SelectItem key={opt.value} value={opt.value} className="rounded-lg py-3 font-medium">{opt.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Button 
             onClick={() => updateStatus(Array.from(selectedStudents), bulkStatus)}
             disabled={selectedStudents.size === 0 || !bulkStatus || loading}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md rounded-xl h-11 px-6 font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white shadow-[0_4px_14px_0_rgba(15,23,42,0.2)] hover:shadow-[0_6px_20px_rgba(15,23,42,0.23)] rounded-xl h-12 px-8 font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:active:scale-100 hover:-translate-y-0.5"
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
-            {loading ? '' : 'Update'}
+            {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <CheckCircle2 className="w-5 h-5 mr-2" strokeWidth={2.5} />}
+            {loading ? 'Updating' : 'Update'}
           </Button>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {filteredStudents.length === 0 ? (
-          <div className="text-center text-slate-500 py-12 bg-white/50 backdrop-blur-sm rounded-2xl border border-slate-200/50 border-dashed">
-            <User className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="font-medium">No students found.</p>
+          <div className="text-center text-slate-500 py-16 bg-white/50 backdrop-blur-xl rounded-[2rem] border border-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 mb-4">
+              <User className="w-10 h-10 text-slate-300" strokeWidth={2} />
+            </div>
+            <p className="text-lg font-bold">No students found.</p>
+            <p className="text-sm mt-1 opacity-70">Try a different search term.</p>
           </div>
         ) : (
           filteredStudents.map((student) => (
             <div 
               key={student.id} 
-              className={`bg-white p-5 rounded-2xl border transition-all duration-200 shadow-sm flex flex-col gap-4 relative overflow-hidden ${
-                selectedStudents.has(student.id) ? 'border-indigo-400 ring-1 ring-indigo-400/20 bg-indigo-50/30' : 'border-slate-200/60 hover:border-indigo-200 hover:shadow-md'
+              className={`bg-white/80 backdrop-blur-lg p-6 rounded-[2rem] transition-all duration-300 flex flex-col gap-5 relative overflow-hidden group ${
+                selectedStudents.has(student.id) 
+                  ? 'border border-indigo-400 ring-4 ring-indigo-400/10 shadow-[0_8px_30px_-4px_rgba(99,102,241,0.15)] bg-indigo-50/40' 
+                  : 'border border-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_40px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1'
               }`}
             >
-              <div className="flex items-start gap-4">
-                <div className="pt-1">
-                  <Checkbox 
-                    checked={selectedStudents.has(student.id)}
-                    onCheckedChange={() => toggleSelectStudent(student.id)}
-                    className="border-slate-300 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600 w-5 h-5 rounded-md"
-                  />
+              <div className="flex items-start gap-5">
+                <div className="pt-2">
+                  <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100">
+                    <Checkbox 
+                      checked={selectedStudents.has(student.id)}
+                      onCheckedChange={() => toggleSelectStudent(student.id)}
+                      className="border-slate-300 data-[state=checked]:bg-indigo-600 w-7 h-7 rounded-lg transition-transform active:scale-90"
+                    />
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-lg truncate pr-4">{student.name}</h3>
-                      <div className="flex items-center text-slate-500 mt-1 text-sm">
-                        <MapPin className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-indigo-400" />
-                        <span className="truncate">{student.address}</span>
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-black text-slate-900 text-xl truncate tracking-tight">{student.name}</h3>
+                      <div className="flex items-center text-slate-500 mt-2 text-sm font-medium">
+                        <MapPin className="w-4 h-4 mr-2 flex-shrink-0 text-indigo-400" strokeWidth={2.5} />
+                        <span className="truncate leading-relaxed">{student.address}</span>
                       </div>
                     </div>
                     <a 
                       href={`tel:${student.parentPhone}`}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors flex-shrink-0 shadow-sm border border-emerald-100"
+                      className="flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all flex-shrink-0 shadow-sm border border-emerald-100 hover:shadow-[0_8px_20px_-4px_rgba(16,185,129,0.3)] hover:-translate-y-1"
                     >
-                      <Phone className="w-4 h-4" />
+                      <Phone className="w-5 h-5 pointer-events-none" strokeWidth={2.5} />
                     </a>
                   </div>
                 </div>
               </div>
               
-              <div className="pl-9">
+              <div className="pl-14">
                 <Select onValueChange={(val: string | null) => {
                   if (val) {
                     updateStatus([student.id], val);
                   }
                 }}>
-                  <SelectTrigger className="w-full border-slate-200 bg-slate-50/50 rounded-xl h-11 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                  <SelectTrigger className="w-full border-slate-200 bg-white shadow-sm rounded-2xl h-12 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors focus:ring-2 focus:ring-indigo-500/20">
                     <SelectValue placeholder="Quick Update Status" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl">
+                  <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
                     {statusOptions.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value} className="rounded-lg">{opt.label}</SelectItem>
+                      <SelectItem key={opt.value} value={opt.value} className="rounded-xl py-3 font-medium">{opt.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

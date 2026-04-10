@@ -65,6 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading) {
+      // Allow unauthenticated access to parent portal
+      if (pathname.startsWith('/parent')) return;
+
       if (!user && pathname !== '/') {
         router.push('/');
       } else if (user && pathname === '/') {
