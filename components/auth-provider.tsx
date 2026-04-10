@@ -36,7 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setRole(userData.role);
           } else {
             // Check if it's the default admin
-            if (currentUser.email === 'ayushwagh1st@gmail.com' && currentUser.emailVerified) {
+            const adminEmails = ['ayushwagh1st@gmail.com', 'abhijeetkurle.ak@gmail.com'];
+            if (currentUser.email && adminEmails.includes(currentUser.email)) {
               const newAdmin = {
                 uid: currentUser.uid,
                 email: currentUser.email,
