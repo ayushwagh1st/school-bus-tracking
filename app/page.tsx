@@ -5,7 +5,7 @@ import { signInWithGoogle } from '@/firebase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bus, ShieldCheck, ArrowRight, Mail, Lock } from 'lucide-react';
+import { Bus, ShieldCheck, ArrowRight, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -54,7 +55,7 @@ export default function LoginPage() {
       <div className="absolute top-[40%] left-[60%] w-[300px] h-[300px] bg-sky-400/20 rounded-full blur-[100px] pointer-events-none"></div>
       
       <div className="w-full max-w-[420px] relative z-10">
-        <div className="bg-white/70 backdrop-blur-3xl border border-white/80 rounded-[2rem] p-8 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_16px_60px_-15px_rgba(0,0,0,0.1)]">
+        <div className="bg-white/70 backdrop-blur-3xl border border-white/80 rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_16px_60px_-15px_rgba(0,0,0,0.1)]">
           
           <div className="text-center space-y-6 mb-10">
             <div className="flex justify-center">
@@ -88,13 +89,25 @@ export default function LoginPage() {
                 <div className="relative group">
                   <Lock className="absolute left-4 top-3.5 h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" strokeWidth={2} />
                   <Input 
-                    type="password" 
+                    type={showPassword ? "text" : "password"} 
                     placeholder="Password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 bg-white/50 border-slate-200/60 text-slate-900 placeholder:text-slate-400 h-12 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium backdrop-blur-sm shadow-sm hover:bg-white"
+                    className="pl-12 pr-12 bg-white/50 border-slate-200/60 text-slate-900 placeholder:text-slate-400 h-12 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium backdrop-blur-sm shadow-sm hover:bg-white"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-3.5 text-slate-400 hover:text-indigo-500 transition-colors focus:outline-none"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" strokeWidth={2} />
+                    ) : (
+                      <Eye className="h-5 w-5" strokeWidth={2} />
+                    )}
+                  </button>
                 </div>
               </div>
               <Button 

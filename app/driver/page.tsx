@@ -213,8 +213,8 @@ export default function DriverDashboard() {
   );
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto pb-20">
-      <div className="bg-white/80 backdrop-blur-2xl border border-white p-6 sm:p-8 sm:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden -mx-4 -mt-4 sm:mx-0 sm:mt-0">
+    <div className="space-y-6 max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pt-8 pb-24">
+      <div className="bg-white/80 backdrop-blur-2xl border border-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start gap-6">
           <div>
@@ -253,14 +253,31 @@ export default function DriverDashboard() {
                 <div className="bg-red-100/60 p-5 rounded-2xl border border-red-200 text-red-800 text-sm font-medium">
                   <strong className="text-red-900 font-bold block mb-1">Warning:</strong> This will immediately send an SMS alert to the parents of <strong className="text-red-900">{students.length} students</strong> on your route. Use this only in genuine emergencies.
                 </div>
-                <div className="space-y-3">
-                  <label className="text-sm font-bold text-red-900">Additional Details (Optional)</label>
-                  <Textarea 
-                    placeholder="E.g., Bus broken down on Main St. Replacement bus is on the way. All children are safe."
-                    value={emergencyMessage}
-                    onChange={(e) => setEmergencyMessage(e.target.value)}
-                    className="border-red-200 focus-visible:ring-red-500 bg-white/80 backdrop-blur-sm min-h-[120px] rounded-2xl p-4 font-medium"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-red-900 drop-shadow-sm">Quick Select Preset</label>
+                    <Select onValueChange={(val) => setEmergencyMessage(val)}>
+                      <SelectTrigger className="w-full border-red-200 bg-white/80 backdrop-blur-sm rounded-2xl h-12 text-slate-700 font-semibold focus:ring-red-500/50">
+                        <SelectValue placeholder="Select a common issue..." />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                        <SelectItem value="Bus broken down. Replacement bus is on the way. All children are safe." className="py-3 font-medium">Bus Broken Down</SelectItem>
+                        <SelectItem value="Heavy traffic delay. Route will be delayed by 30-45 minutes." className="py-3 font-medium">Heavy Traffic Delay</SelectItem>
+                        <SelectItem value="Minor accident. Everyone is completely safe, but we are waiting for protocol clearance." className="py-3 font-medium">Minor Accident</SelectItem>
+                        <SelectItem value="Weather conditions delaying route. Proceeding safely but slowly." className="py-3 font-medium">Severe Weather Delay</SelectItem>
+                        <SelectItem value="Route diversion due to road closure. Experiencing delays." className="py-3 font-medium">Route Diversion</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-red-900 drop-shadow-sm">Or type custom message</label>
+                    <Textarea 
+                      placeholder="Provide specific details about the emergency..."
+                      value={emergencyMessage}
+                      onChange={(e) => setEmergencyMessage(e.target.value)}
+                      className="border-red-200 focus-visible:ring-red-500/50 bg-white/80 backdrop-blur-sm min-h-[100px] rounded-2xl p-4 font-medium transition-all shadow-inner"
+                    />
+                  </div>
                 </div>
               </div>
               <DialogFooter className="gap-3 sm:gap-0">

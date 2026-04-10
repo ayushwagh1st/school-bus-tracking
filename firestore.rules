@@ -103,7 +103,8 @@ service cloud.firestore {
     }
 
     match /students/{studentId} {
-      allow read: if isAuthenticated() && (isAdmin() || isDriver());
+      // Allow anyone to read so parents can query their child by phone number
+      allow read: if true;
       allow create: if isAdmin() && isValidStudent();
       allow update: if isAdmin() && isValidStudent();
       allow delete: if isAdmin();
@@ -122,7 +123,8 @@ service cloud.firestore {
     }
 
     match /bus_locations/{driverId} {
-      allow read: if isAuthenticated();
+      // Allow anyone to read so parents can track the bus
+      allow read: if true;
 
       allow create: if (
         isAdmin() ||
